@@ -66,7 +66,7 @@ tvEstudiantes.grid(column=0,row=4,columnspan=5,padx=5)
 tvEstudiantes["columns"]=("ID","DNI","SEXO","NOMBRES","APELLIDOS","ROL")
 tvEstudiantes.column("#0",width=0,stretch=NO)
 tvEstudiantes.column("ID",width=50,anchor=CENTER)
-tvEstudiantes.column("DNI",width=50,anchor=CENTER)
+tvEstudiantes.column("DNI",width=70,anchor=CENTER)
 tvEstudiantes.column("SEXO",width=50,anchor=CENTER)
 tvEstudiantes.column("NOMBRES",width=100,anchor=CENTER)
 tvEstudiantes.column("APELLIDOS",width=100,anchor=CENTER)
@@ -191,7 +191,6 @@ def actualizar():
         if validar():
             id=tvEstudiantes.selection()[0]
             val=(dni.get(),sexo.get(),nombres.get(),apellidos.get(),rol.get())
-            print(val)
             sql="update estudiantes set dni=%s,sexo=%s,nombres=%s,apellidos=%s,rol=%s where id="+id
             db.cursor.execute(sql,val)
             db.connection.commit()
