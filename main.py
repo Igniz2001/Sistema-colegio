@@ -9,6 +9,7 @@ ventana.geometry("600x500")
 
 db=Database()
 modificar=False
+buscar = StringVar()
 dni=StringVar()
 sexo=StringVar()
 nombres=StringVar()
@@ -26,33 +27,37 @@ def estudianteClick(event):
 
 
 marco=LabelFrame(ventana, text="Formulario de gestión de estudiantes")
-marco.place(x=50,y=50,width=500,height=400)
+marco.place(x=50,y=50,width=500,height=500)
 
 # labels y entrys
-lblDni=Label(marco,text="DNI").grid(column=0,row=0, padx=5,pady=5)
-txtDni=Entry(marco,textvariable=dni)
+lblDni=Label(marco,text="Buscar").grid(column=0,row=0, padx=5,pady=5)
+txtDni=Entry(marco,textvariable=buscar)
 txtDni.grid(column=1,row=0)
 
-lblSexo=Label(marco,text="Sexo").grid(column=0,row=1, padx=5,pady=5)
+lblDni=Label(marco,text="DNI").grid(column=0,row=1, padx=5,pady=5)
+txtDni=Entry(marco,textvariable=dni)
+txtDni.grid(column=1,row=1)
+
+lblSexo=Label(marco,text="Sexo").grid(column=2,row=1, padx=5,pady=5)
 txtSexo=ttk.Combobox(marco,values=["H","M"],textvariable=sexo)
-txtSexo.grid(column=1,row=1)
+txtSexo.grid(column=3,row=1)
 txtSexo.current(0)
 
-lblNombres=Label(marco,text="Nombres").grid(column=2,row=0, padx=5,pady=5)
+lblNombres=Label(marco,text="Nombres").grid(column=0,row=2, padx=5,pady=5)
 txtNombres=Entry(marco,textvariable=nombres)
-txtNombres.grid(column=3,row=0)
+txtNombres.grid(column=1,row=2)
 
-lblApellidos=Label(marco,text="Apellidos").grid(column=2,row=1, padx=5,pady=5)
+lblApellidos=Label(marco,text="Apellidos").grid(column=2,row=2, padx=5,pady=5)
 txtApellidos=Entry(marco,textvariable=apellidos)
-txtApellidos.grid(column=3,row=1)
+txtApellidos.grid(column=3,row=2)
 
 lblMensaje=Label(marco,text="aqui van los mensajes",fg="green")
-lblMensaje.grid(column=0,row=2,columnspan=4)
+lblMensaje.grid(column=0,row=3,columnspan=4)
 
 # tabla de la lista de estudiantes
 
 tvEstudiantes=ttk.Treeview(marco,selectmode=NONE)
-tvEstudiantes.grid(column=0,row=3,columnspan=4,padx=5)
+tvEstudiantes.grid(column=0,row=4,columnspan=4,padx=5)
 tvEstudiantes["columns"]=("ID","DNI","SEXO","NOMBRES","APELLIDOS",)
 tvEstudiantes.column("#0",width=0,stretch=NO)
 tvEstudiantes.column("ID",width=50,anchor=CENTER)
@@ -69,17 +74,37 @@ tvEstudiantes.heading("APELLIDOS",text="APELLIDOS",anchor=CENTER)
 tvEstudiantes.bind("<<TreeviewSelect>>",estudianteClick)
 
 #BOTONES DE ACCION
+btnEliminar=Button(marco,text="Buscar",command=lambda:buscarEstudiante())
+btnEliminar.grid(column=0,row=5)
 btnEliminar=Button(marco,text="Eliminar",command=lambda:eliminar())
-btnEliminar.grid(column=1,row=4)
+btnEliminar.grid(column=1,row=5)
 btnNuevo=Button(marco,text="Guardar",command=lambda:nuevo())
-btnNuevo.grid(column=2,row=4)
+btnNuevo.grid(column=2,row=5)
 btnModificar=Button(marco,text="Seleccionar",command=lambda:actualizar())
-btnModificar.grid(column=3,row=4)
+btnModificar.grid(column=3,row=5)
 
 
 
 
 #funciones
+
+def buscarEstudiante():
+    if len(buscar.get()):
+        query = buscar.get()
+        try:
+            sql = f"select * from estudiantes where dni like '{int(query)}'"
+        except:
+            sql = f"select * from estudiantes where nombres like '{query}' or apellidos like '{query}'"
+        vaciar_tabla()
+        db.cursor.execute(sql)
+        filas=db.cursor.fetchall()
+        for fila in filas:
+            id=fila[0]
+            tvEstudiantes.insert("",END, id, text=id, values=fila)
+
+def buscarSexo():
+        pass
+
 
 def modificarFalse():
     global modificar
@@ -101,6 +126,7 @@ def validar():
     return len(dni.get()) and len(nombres.get()) and len(apellidos.get()) 
 
 def limpiar():
+    buscar.set("")
     dni.set("")
     nombres.set("")
     apellidos.set("")
