@@ -2,7 +2,6 @@ from tkinter import *
 from tkinter import ttk
 from Conexion import *
 
-
 ventana = Tk()
 ventana.title("Crud MySql Tkinter")
 ventana.geometry("600x500")
@@ -90,6 +89,8 @@ btnNuevo=Button(marco,text="Guardar",command=lambda:nuevo())
 btnNuevo.grid(column=2,row=5)
 btnModificar=Button(marco,text="Seleccionar",command=lambda:actualizar())
 btnModificar.grid(column=3,row=5)
+btnRefrescar = Button(marco, text="Refrescar", command=lambda: refrescar())
+btnRefrescar.grid(column=4, row=5)
 
 
 
@@ -113,6 +114,10 @@ def buscarEstudiante():
 def buscarSexo():
         pass
 
+def refrescar():
+    buscar.set("")
+    vaciar_tabla()
+    llenar_tabla()
 
 def modificarFalse():
     global modificar
@@ -167,17 +172,17 @@ def eliminar():
         lblMensaje.config(text="seleccione un registro para eliminar")
 
 def nuevo():
-    if modificar==False:
+    if modificar == False:
         if validar():
-            val=(dni.get(),sexo.get(),nombres.get(),apellidos.get(),rol.get())
-            sql="insert into estudiantes (dni,sexo,nombres,apellidos,rol) values(%s,%s,%s,%s,%s)"
-            db.cursor.execute(sql,val)
+            val = (dni.get(), sexo.get(), nombres.get(), apellidos.get(), rol.get())
+            sql = "INSERT INTO estudiantes (dni, sexo, nombres, apellidos, rol) VALUES (%s, %s, %s, %s, %s)"
+            db.cursor.execute(sql, val)
             db.connection.commit()
-            lblMensaje.config(text="se ha guardado un registro correctamente",fg="green")
-            llenar_tabla()
+            lblMensaje.config(text="Se ha guardado un registro correctamente", fg="green")
             limpiar()
+            llenar_tabla()  # Agregar esta línea para actualizar la tabla
         else:
-            lblMensaje.config(text="los campos no deben estar vacios",fg="red")
+            lblMensaje.config(text="Los campos no deben estar vacíos", fg="red")
     else:
         modificarFalse()
 
@@ -185,8 +190,9 @@ def actualizar():
     if modificar==True:
         if validar():
             id=tvEstudiantes.selection()[0]
-            val=(dni.get(),sexo.get(),nombres.get(),apellidos.get(), rol.get())
-            sql="update estudiantes set dni=%s,sexo=%s,nombres=%s,apellidos=%s rol=%s where id="+id
+            val=(dni.get(),sexo.get(),nombres.get(),apellidos.get(),rol.get())
+            print(val)
+            sql="update estudiantes set dni=%s,sexo=%s,nombres=%s,apellidos=%s,rol=%s where id="+id
             db.cursor.execute(sql,val)
             db.connection.commit()
             lblMensaje.config(text="se ha actualizado un registro correctamente",fg="green")
